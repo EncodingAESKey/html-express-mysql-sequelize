@@ -15,13 +15,13 @@ module.exports = function (app) {
         } else if (!pwd) {
             res.json({ code: -1, message: '密码不能为空' });
         } else {
-            const us = await dbs.insertUser({userName, pwd});
-            console.log("注册成功",us);
-            if (us) {
-                res.json({code: 0, message: '注册成功'});
-            } else {
-                res.json({code: -1, message: '注册失败，服务异常！'});
+            const newAccount = await dbs.searchAccount(userName);
+            if (newAccount) {
+                res.json({code: -1, message: '注册账号名已被占用'});
+                return;
             }
+            const us = await dbs.insertUser({userName, pwd});
+            us ? res.json({code: 0, message: '注册成功'}) : res.json({code: -1, message: '注册失败，服务异常！'});
         }
     })
     // 登录
@@ -35,18 +35,25 @@ module.exports = function (app) {
         } else if (!pwd) {
             res.json({ code: -1, message: '密码不能为空' });
         } else {
-            const userInfo = await dbs.searchUser({userName, pwd});
-            console.log("登录成功",userInfo);
-            let {userRes, passRes} = userInfo;
-            if (userRes) {
-                if (passRes) {
+            const {name, password} = await dbs.searchUser({userName, pwd});
+            if (name) {
+                if (password) {
                     res.json({code: 0, message: '登录成功'});
                 } else {
                     res.json({code: -1, message: "密码错误"});
                 }
             } else {
-                res.json({code: -1, message: "账号错误"});
+                res.json({code: -1, message: "此账号不存在"});
             }
         }
+    })
+
+    // 获取所有注册用户信息列表
+    app.post('/getAllUserInfos', urlencodedParser, async function (req, res) {
+        const users = await dbs.searchAllConunt();
+        users.forEach(key => {
+            delete key.dataValues['password'];
+        });
+        res.json({code: 0, message: "", data: users});
     })
 }

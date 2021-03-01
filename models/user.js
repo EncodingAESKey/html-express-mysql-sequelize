@@ -4,10 +4,14 @@ const { v1: uuidv1 } = require('uuid');
 
 // 创建 model
 var User = mysql.define('www_test', {
-    uid: {
+    id: {
+		type: Sequelize.INTEGER,
+		autoIncrement: true,
+		primaryKey: true,
+	},
+    userId: {
         type: Sequelize.UUID,
-        primaryKey: true,
-        allowNull: false,
+        allowNull: false
     },
     name: {
         type: Sequelize.STRING, // 指定值的类型
@@ -17,7 +21,15 @@ var User = mysql.define('www_test', {
     password: {
         type: Sequelize.STRING,
         allowNull: false,
-    }
+    },
+    createdAt: {
+		type: Sequelize.DATE,
+		field: 'created_at'
+	},
+	updatedAt: {
+		type: Sequelize.DATE,
+		field: 'updated_at'
+	}
 }, {
     // 如果为 true 则的名称和 model 相同，即 user
     // 为 false MySQL创建的表名称会是复数 users
@@ -38,13 +50,45 @@ var user = User.sync({ force: false });
 exports.addUser = function(userName, password) {
     // 向 user 表中插入数据
     return User.create({
-        uid: uuidv1(),
+        id: 0,
+        userId: uuidv1(),
         name: userName,
-        password: password
+        password: password,
+        createdAt: getNowFormatDate(),
+        updatedAt: getNowFormatDate()
     });
 };
+
+/**
+ * 获取当前年月日时分秒
+ * return {string} "2019-04-30 11:45:57"
+ */
+function getNowFormatDate () {
+    let date = new Date ();
+    let seperator1 = "-";
+    let seperator2 = ":";
+    let month = date.getMonth () + 1 < 10 ? "0" + (date.getMonth () + 1) : date.getMonth () + 1;
+    let strDate = date.getDate () < 10 ? "0" + date.getDate () : date.getDate ();
+    let currentdate = date.getFullYear () + seperator1 + month + seperator1 + strDate
+        + " " + date.getHours () + seperator2 + date.getMinutes ()
+        + seperator2 + date.getSeconds ();
+    return currentdate;
+}
+
 
 // 通过用户名查找用户
 exports.findByName = function(userName) {
     return User.findOne({ where: { name: userName } });
+};
+
+exports.findOne = function(where) {
+    return User.findOne({ where: where });
+};
+
+exports.allCount = function(){
+    return User.findAll({
+        order: [
+            ['id', 'ASC']
+        ],
+    });
 };

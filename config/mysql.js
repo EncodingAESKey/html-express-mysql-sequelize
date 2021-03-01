@@ -1,7 +1,7 @@
 
 const { Sequelize } = require('sequelize');
 // 数据库连接
-const url = 'mysql://root:12345678@localhost:3306/mysql';
+const url = 'mysql://root:数据库密码@数据库地址:3306/mysql';
 const mysql = new Sequelize(url, {
     // 选项设置
     define: {

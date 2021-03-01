@@ -16,7 +16,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //     message: 'Welcome to the beginning of nothingness.',
 // }));
 
-// require('./router/index')(app); // 注册路由
+
+// TODO前后不分离的话可以用下面的操作
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/views/' + 'login.html');
 })
