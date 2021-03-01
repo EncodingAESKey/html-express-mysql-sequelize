@@ -45,50 +45,6 @@ var User = mysql.define('www_test', {
 // 默认情况下 forse = false
 var user = User.sync({ force: false });
 
-
-// 添加新用户
-exports.addUser = function(userName, password) {
-    // 向 user 表中插入数据
-    return User.create({
-        id: 0,
-        userId: uuidv1(),
-        name: userName,
-        password: password,
-        createdAt: getNowFormatDate(),
-        updatedAt: getNowFormatDate()
-    });
-};
-
-/**
- * 获取当前年月日时分秒
- * return {string} "2019-04-30 11:45:57"
- */
-function getNowFormatDate () {
-    let date = new Date ();
-    let seperator1 = "-";
-    let seperator2 = ":";
-    let month = date.getMonth () + 1 < 10 ? "0" + (date.getMonth () + 1) : date.getMonth () + 1;
-    let strDate = date.getDate () < 10 ? "0" + date.getDate () : date.getDate ();
-    let currentdate = date.getFullYear () + seperator1 + month + seperator1 + strDate
-        + " " + date.getHours () + seperator2 + date.getMinutes ()
-        + seperator2 + date.getSeconds ();
-    return currentdate;
+module.exports = {
+    User
 }
-
-
-// 通过用户名查找用户
-exports.findByName = function(userName) {
-    return User.findOne({ where: { name: userName } });
-};
-
-exports.findOne = function(where) {
-    return User.findOne({ where: where });
-};
-
-exports.allCount = function(){
-    return User.findAll({
-        order: [
-            ['id', 'ASC']
-        ],
-    });
-};

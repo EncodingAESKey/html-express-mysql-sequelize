@@ -1,5 +1,5 @@
 const bodyParser = require('body-parser');
-const dbs = require('../schema/user');
+const dbs = require('../controllers/user');
 //创建application/x-www-form-urlencoded编码解析
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
@@ -15,7 +15,7 @@ module.exports = function (app) {
         } else if (!pwd) {
             res.json({ code: -1, message: '密码不能为空' });
         } else {
-            const newAccount = await dbs.searchAccount(userName);
+            const newAccount = await dbs.searchAccount({name: userName});
             if (newAccount) {
                 res.json({code: -1, message: '注册账号名已被占用'});
                 return;
